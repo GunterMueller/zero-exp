@@ -5,7 +5,6 @@ PLOTDIR=gnuplot
 
 ARCH_DEV=sdg
 LOG_DEV=sda
-DB_DEV=sdh
 BACKUP_DEV=sdi
 
 if [ ! -d "$EXPDIR" ]; then
@@ -34,7 +33,7 @@ EXPNAME="warmup_fl"
 # EXPNAME="buffersizes"
 
 # Size of window when applying moving average
-MAVG_WINDOW=10
+MAVG_WINDOW=5
 
 for s in $STATS; do
     rm -f $EXPDIR/$s.txt
@@ -54,43 +53,27 @@ for d in $EXPDIR/$EXPNAME-*; do
 
     if [ -f $DIR/iostat.txt ]; then
         cat $DIR/iostat.txt |
-        awk -v dbdev=$DB_DEV -v archdev=$ARCH_DEV -v logdev=$LOG_DEV \
+        awk -v archdev=$ARCH_DEV -v logdev=$LOG_DEV \
             'BEGIN { track = 0; }
-             { if (track == 6) { print a, b, c, d, e, f; track = 0 } }
+             { if (track == 4) { print a, b, c, d; track = 0 } }
              $1 == archdev { a = $7; track++ }
              $1 == archdev { b = $6; track++ }
              $1 == logdev { c = $7; track++}
-             $1 == logdev { d = $6; track++}
-             $1 == dbdev { e = $7; track++ }
-             $1 == dbdev { f = $6; track++ }' \
+             $1 == logdev { d = $6; track++}' \
             > $DIR/iostat_dev.txt
     fi
 
     if [ -f $DIR/iostat.txt ]; then
         cat $DIR/iostat.txt |
-        awk -v dbdev=$DB_DEV -v archdev=$ARCH_DEV -v logdev=$LOG_DEV \
+        awk -v archdev=$ARCH_DEV -v logdev=$LOG_DEV \
             'BEGIN { track = 0; }
-             { if (track == 6) { print a, b, c, d, e, f; track = 0 } }
+             { if (track == 4) { print a, b, c, d; track = 0 } }
              $1 == archdev { a = $5; track++ }
              $1 == archdev { b = $4; track++ }
              $1 == logdev { c = $5; track++}
-             $1 == logdev { d = $4; track++}
-             $1 == dbdev { e = $5; track++ }
-             $1 == dbdev { f = $4; track++ }' \
+             $1 == logdev { d = $4; track++}' \
             > $DIR/iops_dev.txt
     fi
-
-#     if [ -f $DIR/iostat.txt ]; then
-#         cat $DIR/iostat.txt |
-#         awk -v archdev=$ARCH_DEV -v logdev=$LOG_DEV \
-#             'BEGIN { track = 0; }
-#              { if (track == 4) { print a, b, c, d; track = 0 } }
-#              $1 == archdev { a = $5; track++ }
-#              $1 == archdev { b = $4; track++ }
-#              $1 == logdev { c = $5; track++}
-#              $1 == logdev { d = $4; track++}' \
-#             > $DIR/iops_dev.txt
-#     fi
 
     TITLE=$PARAM
     if [ "$PARAM" == "logbased" ]; then
@@ -107,7 +90,7 @@ for d in $EXPDIR/$EXPNAME-*; do
     touch $EXPDIR/tput.txt
     awk -v title="$TITLE" -v window=$MAVG_WINDOW '
          BEGIN { print title }
-         $1 > -1 {
+         $1 > 0 {
             n = window
             for (i = 0; i < n-1; i++) {
                 t[i] = t[i+1]

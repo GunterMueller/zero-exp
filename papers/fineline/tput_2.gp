@@ -41,14 +41,14 @@ set rmargin 2
 
 set key bottom inside right autotitle columnhead invert opaque samplen 2 width 2
 
-set xlabel "Time (min)" offset 0,-1
-set xrange [0:5]
-set xtics 0,1
+set xlabel "Time (sec)"
+set xrange [0:600]
+set xtics 0,60
 set mxtics 4
 
-set ylabel "Throughput (ktps)" offset -2
+set ylabel "Throughput (ktps)"
 #set yrange [0:35]
 
 file = dir."/tput.txt"
 
-plot for [i=1:ncolumns] file using (column(0)/60):(column(i)/1000) with lines ls i
+plot for [i=1:ncolumns] file using (column(0)):(column(i)/1000) with lines ls i

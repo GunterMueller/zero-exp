@@ -1,7 +1,7 @@
 set terminal cairolatex standalone pdf size 8.5cm,3.3cm dashed transparent font "default,8" \
     header "\\usepackage{xcolor}"
-set output "tput.tex"
-set datafile separator "\t"
+set output "avgtput.tex"
+#set datafile separator "\t"
 
 set style line 11 lc rgb '#808080' lt 1
 set border 11 back ls 11
@@ -36,19 +36,22 @@ set palette defined ( 0 '#1B9E77',\
 		      6 '#A6761D',\
 		      7 '#666666' )
 
-set lmargin 9
+set lmargin 10
 set rmargin 2
 
-set key bottom inside right autotitle columnhead invert opaque samplen 2 width 2
+set key bottom inside right autotitle columnhead invert opaque samplen 2 width 2 spacing 2
 
-set xlabel "Time (min)" offset 0,-1
-set xrange [0:5]
-set xtics 0,1
-set mxtics 4
+set xlabel "Threads" offset 0,-1
+#set xrange [0:600]
+set xtics offset 0,-0.5
+#set mxtics 4
 
 set ylabel "Throughput (ktps)" offset -2
 #set yrange [0:35]
 
-file = dir."/tput.txt"
+file = dir."/avgtput.txt"
 
-plot for [i=1:ncolumns] file using (column(0)/60):(column(i)/1000) with lines ls i
+#plot file using (column(0)):(column(i)/1000) with lines ls i
+plot file using 1:($2/1000):xtic(1) with linespoints ls 1 title "WAL", \
+ file using 1:($3/1000):xtic(1) with linespoints ls 2 title "FineLine"
+ #file using 1:($4/1000):xtic(1) with linespoints ls 3 title "NoRedo"

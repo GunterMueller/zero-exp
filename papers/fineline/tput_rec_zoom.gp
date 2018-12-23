@@ -1,7 +1,13 @@
+set terminal cairolatex standalone pdf size 8.5cm,2.5cm dashed transparent font "default,8" \
+    header "\\usepackage{xcolor}"
+set output "tput_rec_zoom.tex"
+set datafile separator "\t"
+
 set style line 11 lc rgb '#808080' lt 1
 set border 11 back ls 11
 set style line 12 lc rgb '#444444' lt 0 lw 1
 set grid back ls 12
+set style fill transparent solid 0.5 border
 
 # line styles for ColorBrewer Dark2
 # for use with qualitative/categorical data
@@ -30,25 +36,22 @@ set palette defined ( 0 '#1B9E77',\
 		      6 '#A6761D',\
 		      7 '#666666' )
 
-set tics textcolor rgb "black"
+set lmargin 10
+set rmargin 2
 
-set terminal cairolatex standalone pdf size 8.5cm,4cm dashed color colortext transparent font "default,9"
-set output "xctlatency.tex"
-set datafile separator "\t"
+set key bottom inside right autotitle columnhead invert opaque samplen 2 width 2 spacing 2
 
-set key top right autotitle columnhead opaque samplen 2 width 2
+set xlabel "Time (sec)" offset 0,-1
+set xrange [0:40]
+set xtics 0,5 offset 0,-0.5
+set mxtics 4
 
-# set title "Segment size: 1024 KB (adaptive)"
-# unset key
+set ylabel "Throughp. (ktps)" offset -2,-1.6
+set yrange [0:0.2]
+set ytics 0,0.1
 
-set xlabel "Time (min)"
-set xrange [4:14]
+file = dir."/tput_rec.txt"
 
-set ylabel "Latency (ms)"
-set ytics 0.1,10 nomirror
-set yrange [0.1:150]
-set logscale y
-
-file = dir."/xctlatency.txt"
-
-plot for [i=1:ncolumns] file using (column(0)/60):i with lines ls i
+plot file using (column(0)):($2/1000) with lines ls 1 title "WAL", \
+ '' using (column(0)):($3/1000) with lines ls 3 title "WAL-Instant", \
+ '' using (column(0)):($1/1000) with lines ls 2 title "FineLine"

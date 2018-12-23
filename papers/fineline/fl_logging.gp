@@ -1,7 +1,7 @@
 set terminal cairolatex standalone pdf size 8.5cm,3.3cm dashed transparent font "default,8" \
     header "\\usepackage{xcolor}"
-set output "tput.tex"
-set datafile separator "\t"
+set output "fl_logging.tex"
+#set datafile separator "\t"
 
 set style line 11 lc rgb '#808080' lt 1
 set border 11 back ls 11
@@ -36,19 +36,30 @@ set palette defined ( 0 '#1B9E77',\
 		      6 '#A6761D',\
 		      7 '#666666' )
 
-set lmargin 9
-set rmargin 2
+set lmargin 14
+set rmargin 1
+set bmargin 3
+set key off
 
-set key bottom inside right autotitle columnhead invert opaque samplen 2 width 2
+file = dir."/fl_logging.txt"
 
-set xlabel "Time (min)" offset 0,-1
-set xrange [0:5]
-set xtics 0,1
-set mxtics 4
+set multiplot layout 1, 2 ;
 
-set ylabel "Throughput (ktps)" offset -2
-#set yrange [0:35]
+set boxwidth 0.7 
+set style fill solid 0.5
 
-file = dir."/tput.txt"
+set xtics offset 0,-0.5
+set ylabel "Log bytes / txn." offset -5
+set xrange [-1:2]
+set yrange [0:6500]
+plot file using (column(0)==0 ? $0 : 1/0):2:xtic(1) with boxes notitle ls 1, \
+    '' using (column(0)==1 ? $0 : 1/0):2:xtic(1) with boxes notitle ls 2, \
+    '' using 0:2:(sprintf("%.2f",$2)) with labels center offset 0,0.7
 
-plot for [i=1:ncolumns] file using (column(0)/60):(column(i)/1000) with lines ls i
+set xtics offset 0,-0.5
+set ylabel "Log inserts / txn." offset -3
+set yrange [0:15.5]
+plot file using (column(0)==0 ? $0 : 1/0):3:xtic(1) with boxes notitle ls 1, \
+    '' using (column(0)==1 ? $0 : 1/0):3:xtic(1) with boxes notitle ls 2, \
+    '' using 0:3:(sprintf("%.2f",$3)) with labels center offset 0,0.7
+

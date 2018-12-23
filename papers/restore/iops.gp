@@ -26,9 +26,9 @@ set palette defined ( 0 '#1B9E77',\
 		      7 '#666666' )
 
 set terminal cairolatex standalone pdf size 8.5cm,6cm dashed transparent font "default,9"
-set output "iostat_".mytitle.".tex"
+set output "iops_".mytitle.".tex"
 
-set title "Segment size = " . mytitle . " GB"
+set title "Buffer size = " . mytitle . " GB"
 
 set style line 11 lc rgb '#808080' lt 1
 set border 3 back ls 11
@@ -42,8 +42,8 @@ set lmargin 9
 set key outside bottom center vertical maxrows 2 samplen 2
 
 set ytics nomirror
-set ylabel "Bandwidth (MB/s)"
-set yrange [0:280]
+set ylabel "IOPS"
+set yrange [0:18000]
 unset mytics
 
 set xlabel "Time (min)"
@@ -51,7 +51,7 @@ set xtics mirror
 set mxtics 10
 # set xrange [0:900]
 
-file = dir."/iostat_dev.txt" 
+file = dir."/iops_dev.txt" 
 plot file using (column(0)/12):1 with lines ls 1 t "Log W", \
     "" using (column(0)/12):2 with lines ls 2 t "Log R", \
     "" using (column(0)/12):3 with lines ls 3 t "Arch W", \
